@@ -4,6 +4,7 @@ fullnameOverride: ""
 
 # Global settings
 global:
+  version: "1.25.02"  # Supabase version
   postgresql:
     auth:
       postgresPassword: "postgres"  # Change this in production!
@@ -27,7 +28,7 @@ postgresql:
 api:
   image:
     repository: supabase/edge-runtime
-    tag: "latest"
+    tag: {{ .Values.global.version }}
   resources:
     requests:
       memory: "256Mi"
@@ -43,7 +44,7 @@ api:
 studio:
   image:
     repository: supabase/studio
-    tag: "latest"
+    tag: {{ .Values.global.version }}
   resources:
     requests:
       memory: "256Mi"
@@ -57,12 +58,22 @@ studio:
 
 # Ingress configuration
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
+  enabled: true  # Set to true to enable ingress
+  className: nginx  # Your ingress class name
+  annotations:
+    cert-manager.io/cluster-issuer: your-actual-issuer-name
+    kubernetes.io/ingress.class: nginx
+    # For SSL/TLS
+    # kubernetes.io/tls-acme: "true"
+    # For specific ingress controller settings
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
-    - host: chart-example.local
+    - host: your-actual-domain.com  # Replace with your actual domain
       paths:
         - path: /
-          pathType: ImplementationSpecific
-  tls: [] 
+          pathType: Prefix
+  tls:  # Enable TLS by adding your secret
+    - secretName: your-actual-tls-secret-name
+      hosts:
+        - your-actual-domain.com 
