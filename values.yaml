@@ -22,27 +22,17 @@ secret:
     username: "postgres"
     password: "postgres"  # Change in production!
     database: "postgres"
+    host: "postgresql.default.svc.cluster.local"  # Update this to match your cluster's PostgreSQL service
 
 # Database settings
 db:
-  enabled: true
-  image:
-    repository: supabase/postgres
-    tag: "15.1.0.117"
-  persistence:
-    enabled: true
-    size: 10Gi
-    storageClass: ""
-  resources:
-    requests:
-      cpu: 500m
-      memory: 1Gi
-    limits:
-      cpu: 2000m
-      memory: 4Gi
-  service:
-    type: ClusterIP
-    port: 5432
+  enabled: false  # Disable local PostgreSQL deployment
+  external: true  # Use external PostgreSQL
+  host: "postgresql.default.svc.cluster.local"  # Update this to match your cluster's PostgreSQL service
+  port: 5432
+  database: "postgres"
+  username: "postgres"
+  password: "postgres"  # Change in production!
 
 # Studio settings
 studio:

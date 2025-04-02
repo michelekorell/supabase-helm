@@ -29,7 +29,7 @@ spec:
             - name: STUDIO_PG_META_URL
               value: "http://{{ include "supabase.fullname" . }}-meta:8080"
             - name: POSTGRES_PASSWORD
-              value: {{ .Values.secret.db.password }}
+              value: {{ .Values.db.password }}
             - name: DEFAULT_ORGANIZATION_NAME
               value: "Default Organization"
             - name: DEFAULT_PROJECT_NAME
@@ -42,6 +42,14 @@ spec:
               value: {{ .Values.secret.jwt.serviceKey }}
             - name: AUTH_JWT_SECRET
               value: {{ .Values.secret.jwt.secret }}
+            - name: POSTGRES_HOST
+              value: {{ .Values.db.host }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.db.port | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.db.database }}
+            - name: POSTGRES_USER
+              value: {{ .Values.db.username }}
           resources:
             {{- toYaml .Values.studio.resources | nindent 12 }}
 {{- end }} 

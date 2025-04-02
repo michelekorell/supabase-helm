@@ -33,7 +33,7 @@ spec:
             - name: GOTRUE_DB_DRIVER
               value: "postgres"
             - name: GOTRUE_DB_DATABASE_URL
-              value: "postgres://{{ .Values.secret.db.username }}:{{ .Values.secret.db.password }}@{{ include "supabase.fullname" . }}-db:5432/{{ .Values.secret.db.database }}"
+              value: "postgres://{{ .Values.db.username }}:{{ .Values.db.password }}@{{ .Values.db.host }}:{{ .Values.db.port }}/{{ .Values.db.database }}"
             - name: GOTRUE_SITE_URL
               value: "http://{{ include "supabase.fullname" . }}-studio:3000"
             - name: GOTRUE_JWT_SECRET

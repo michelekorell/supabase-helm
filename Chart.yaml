@@ -2,7 +2,7 @@ apiVersion: v2
 name: supabase
 description: A Helm chart for deploying Supabase on Kubernetes
 type: application
-version: 0.1.8
+version: 0.1.9
 appVersion: "1.0.0"
 maintainers:
   - name: "Your Name"
@@ -17,9 +17,4 @@ keywords:
   - studio
 home: "https://supabase.com"
 sources:
-  - "https://github.com/supabase/supabase"
-dependencies:
-  - name: postgresql
-    version: "12.1.2"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: postgresql.enabled 
+  - "https://github.com/supabase/supabase" 
