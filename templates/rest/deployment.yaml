@@ -1,3 +1,4 @@
+{{- if .Values.rest.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,4 +35,5 @@ spec:
             - name: PGRST_JWT_SECRET
               value: {{ .Values.secret.jwt.secret }}
           resources:
-            {{- toYaml .Values.rest.resources | nindent 12 }} 
+            {{- toYaml .Values.rest.resources | nindent 12 }}
+{{- end }} 

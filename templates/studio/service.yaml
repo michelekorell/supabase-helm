@@ -1,19 +1,19 @@
-{{- if .Values.rest.enabled }}
+{{- if .Values.studio.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "supabase.fullname" . }}-rest
+  name: {{ include "supabase.fullname" . }}-studio
   labels:
     {{- include "supabase.labels" . | nindent 4 }}
-    app.kubernetes.io/component: rest
+    app.kubernetes.io/component: studio
 spec:
-  type: {{ .Values.rest.service.type }}
+  type: {{ .Values.studio.service.type }}
   ports:
-    - port: {{ .Values.rest.service.port }}
+    - port: {{ .Values.studio.service.port }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
     {{- include "supabase.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: rest
+    app.kubernetes.io/component: studio
 {{- end }} 

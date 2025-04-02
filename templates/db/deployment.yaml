@@ -1,3 +1,4 @@
+{{- if .Values.db.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,6 +32,14 @@ spec:
               value: {{ .Values.secret.db.password }}
             - name: POSTGRES_DB
               value: {{ .Values.secret.db.database }}
+            - name: POSTGRES_HOST
+              value: /var/run/postgresql
+            - name: PGPORT
+              value: "5432"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: JWT_EXP
+              value: "3600"
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
@@ -39,4 +48,5 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "supabase.fullname" . }}-db 
+            claimName: {{ include "supabase.fullname" . }}-db
+{{- end }} 

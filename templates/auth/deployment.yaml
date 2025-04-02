@@ -1,0 +1,45 @@
+{{- if .Values.auth.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.fullname" . }}-auth
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+    app.kubernetes.io/component: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "supabase.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: auth
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: auth
+    spec:
+      containers:
+        - name: auth
+          image: "{{ .Values.auth.image.repository }}:{{ .Values.auth.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 9999
+              protocol: TCP
+          env:
+            - name: GOTRUE_API_HOST
+              value: "0.0.0.0"
+            - name: GOTRUE_API_PORT
+              value: "9999"
+            - name: GOTRUE_DB_DRIVER
+              value: "postgres"
+            - name: GOTRUE_DB_DATABASE_URL
+              value: "postgres://{{ .Values.secret.db.username }}:{{ .Values.secret.db.password }}@{{ include "supabase.fullname" . }}-db:5432/{{ .Values.secret.db.database }}"
+            - name: GOTRUE_SITE_URL
+              value: "http://{{ include "supabase.fullname" . }}-studio:3000"
+            - name: GOTRUE_JWT_SECRET
+              value: {{ .Values.secret.jwt.secret }}
+            - name: GOTRUE_JWT_EXP
+              value: "3600"
+          resources:
+            {{- toYaml .Values.auth.resources | nindent 12 }}
+{{- end }} 

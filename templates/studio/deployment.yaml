@@ -1,0 +1,47 @@
+{{- if .Values.studio.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.fullname" . }}-studio
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+    app.kubernetes.io/component: studio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "supabase.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: studio
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: studio
+    spec:
+      containers:
+        - name: studio
+          image: "{{ .Values.studio.image.repository }}:{{ .Values.studio.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: STUDIO_PG_META_URL
+              value: "http://{{ include "supabase.fullname" . }}-meta:8080"
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.secret.db.password }}
+            - name: DEFAULT_ORGANIZATION_NAME
+              value: "Default Organization"
+            - name: DEFAULT_PROJECT_NAME
+              value: "Default Project"
+            - name: SUPABASE_URL
+              value: "http://{{ include "supabase.fullname" . }}-kong:8000"
+            - name: SUPABASE_ANON_KEY
+              value: {{ .Values.secret.jwt.anonKey }}
+            - name: SUPABASE_SERVICE_KEY
+              value: {{ .Values.secret.jwt.serviceKey }}
+            - name: AUTH_JWT_SECRET
+              value: {{ .Values.secret.jwt.secret }}
+          resources:
+            {{- toYaml .Values.studio.resources | nindent 12 }}
+{{- end }} 
