@@ -27,7 +27,7 @@ postgresql:
 # Supabase API settings
 api:
   image:
-    repository: supabase/edge-runtime
+    repository: supabase/postgres
     tag: {{ .Values.global.version }}
   resources:
     requests:
