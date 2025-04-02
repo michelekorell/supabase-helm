@@ -27,7 +27,7 @@ postgresql:
 # Supabase API settings
 api:
   image:
-    repository: supabase/postgres
+    repository: supabase/rest
     tag: "1.25.02"
   resources:
     requests:
