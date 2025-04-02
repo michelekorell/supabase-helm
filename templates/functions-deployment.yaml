@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.fullname" . }}-functions
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+    app.kubernetes.io/component: functions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "supabase.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: functions
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: functions
+    spec:
+      containers:
+        - name: functions
+          image: "{{ .Values.functions.image.repository }}:{{ .Values.functions.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 54321
+              protocol: TCP
+          env:
+            - name: JWT_SECRET
+              value: "your-super-secret-jwt-token-with-at-least-32-characters-long"
+            - name: SUPABASE_URL
+              value: "http://{{ include "supabase.fullname" . }}-kong:8000"
+            - name: SUPABASE_ANON_KEY
+              value: "your-anon-key"
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              value: "your-service-role-key"
+            - name: SUPABASE_DB_URL
+              value: "postgresql://postgres:{{ .Values.global.postgresql.auth.postgresPassword }}@{{ include "supabase.fullname" . }}-postgresql:5432/{{ .Values.global.postgresql.auth.database }}"
+            - name: VERIFY_JWT
+              value: "true"
+          command: ["start", "--main-service", "/home/deno/functions/main"]
+          resources:
+            {{- toYaml .Values.functions.resources | nindent 12 }} 

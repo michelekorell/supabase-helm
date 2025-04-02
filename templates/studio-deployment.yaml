@@ -25,11 +25,21 @@ spec:
               containerPort: 3000
               protocol: TCP
           env:
+            - name: STUDIO_PG_META_URL
+              value: "http://{{ include "supabase.fullname" . }}-meta:8080"
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.global.postgresql.auth.postgresPassword }}
+            - name: DEFAULT_ORGANIZATION_NAME
+              value: "Default Organization"
+            - name: DEFAULT_PROJECT_NAME
+              value: "Default Project"
             - name: SUPABASE_URL
-              value: "http://{{ include "supabase.fullname" . }}-api:54321"
+              value: "http://{{ include "supabase.fullname" . }}-kong:8000"
             - name: SUPABASE_ANON_KEY
-              value: "your-anon-key"  # This should be properly configured in production
-            - name: SUPABASE_SERVICE_ROLE_KEY
-              value: "your-service-role-key"  # This should be properly configured in production
+              value: "your-anon-key"
+            - name: SUPABASE_SERVICE_KEY
+              value: "your-service-role-key"
+            - name: AUTH_JWT_SECRET
+              value: "your-super-secret-jwt-token-with-at-least-32-characters-long"
           resources:
             {{- toYaml .Values.studio.resources | nindent 12 }} 

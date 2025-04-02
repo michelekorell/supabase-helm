@@ -24,11 +24,11 @@ postgresql:
         memory: "512Mi"
         cpu: "500m"
 
-# Supabase API settings
-api:
+# Supabase Auth settings
+auth:
   image:
-    repository: supabase/rest
-    tag: "1.25.02"
+    repository: supabase/gotrue
+    tag: "v2.170.0"
   resources:
     requests:
       memory: "256Mi"
@@ -38,13 +38,13 @@ api:
       cpu: "500m"
   service:
     type: ClusterIP
-    port: 54321
+    port: 9999
 
-# Supabase Studio settings
-studio:
+# Supabase REST API settings
+rest:
   image:
-    repository: supabase/studio
-    tag: "1.25.02"
+    repository: postgrest/postgrest
+    tag: "v12.2.8"
   resources:
     requests:
       memory: "256Mi"
@@ -55,6 +55,70 @@ studio:
   service:
     type: ClusterIP
     port: 3000
+
+# Supabase Studio settings
+studio:
+  image:
+    repository: supabase/studio
+    tag: "20250317-6955350"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: ClusterIP
+    port: 3000
+
+# Supabase Kong Gateway settings
+kong:
+  image:
+    repository: kong
+    tag: "2.8.1"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: ClusterIP
+    port: 8000
+
+# Supabase Analytics settings
+analytics:
+  image:
+    repository: supabase/logflare
+    tag: "1.12.0"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: ClusterIP
+    port: 4000
+
+# Supabase Edge Functions settings
+functions:
+  image:
+    repository: supabase/edge-runtime
+    tag: "v1.67.4"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: ClusterIP
+    port: 54321
 
 # Ingress configuration
 ingress:
