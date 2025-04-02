@@ -1,0 +1,15 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To verify the deployment status, run:
+  kubectl get pods -l "app.kubernetes.io/instance={{ .Release.Name }}"
+
+To get the Supabase Studio URL, run:
+  kubectl get ingress -l "app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath='{.items[0].spec.rules[0].host}'
+
+To get the database connection details, run:
+  kubectl get secret {{ include "supabase.fullname" . }}-db-credentials -o jsonpath='{.data.DATABASE_URL}' | base64 -d
+
+For more information about Supabase, visit:
+  https://supabase.com/docs 

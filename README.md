@@ -1,19 +1,28 @@
 # Supabase Helm Chart
 
-This is a lightweight Helm chart for deploying Supabase on Kubernetes, specifically designed for local k3s clusters managed by Rancher.
+This Helm chart deploys Supabase on Kubernetes. It includes all the core Supabase services:
+- Supabase Studio (Dashboard)
+- PostgreSQL Database
+- REST API
+- Auth Service
+- Realtime Service
 
 ## Prerequisites
 
 - Kubernetes 1.19+
 - Helm 3.0+
-- k3s cluster managed by Rancher
+- Ingress Controller (optional, for external access)
 
 ## Installation
 
-To install the chart with the release name `supabase`:
-
+1. Add the Helm repository:
 ```bash
-helm repo add supabase https://your-helm-repo-url
+helm repo add supabase https://your-repo-url
+helm repo update
+```
+
+2. Install the chart:
+```bash
 helm install supabase supabase/supabase
 ```
 
@@ -23,42 +32,49 @@ The following table lists the configurable parameters of the Supabase chart and 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `postgresql.enabled` | Enable PostgreSQL deployment | `true` |
-| `postgresql.primary.persistence.size` | PostgreSQL PVC size | `10Gi` |
-| `api.image.repository` | Supabase API image repository | `supabase/edge-runtime` |
-| `api.image.tag` | Supabase API image tag | `latest` |
-| `studio.image.repository` | Supabase Studio image repository | `supabase/studio` |
-| `studio.image.tag` | Supabase Studio image tag | `latest` |
+| `nameOverride` | Override the name of the chart | `""` |
+| `fullnameOverride` | Override the full name of the chart | `""` |
+| `global.postgresql.auth.database` | Database name | `postgres` |
+| `global.postgresql.auth.username` | Database username | `postgres` |
+| `global.postgresql.auth.password` | Database password | `postgres` |
+| `supabase.studio.image.repository` | Supabase Studio image repository | `supabase/studio` |
+| `supabase.studio.image.tag` | Supabase Studio image tag | `20240205-0b7a0c1` |
+| `supabase.studio.ingress.enabled` | Enable ingress for Supabase Studio | `true` |
+| `supabase.studio.ingress.hosts` | Ingress hosts configuration | `[{"host": "supabase.local", "paths": [{"path": "/", "pathType": "Prefix"}]}]` |
 
-## Components
+For more configuration options, see the `values.yaml` file.
 
-This chart deploys the following components:
+## Usage
 
-1. **Supabase API**: The core API service
-2. **Supabase Studio**: The web-based management interface
-3. **PostgreSQL**: The database backend
+1. Access Supabase Studio:
+   - If ingress is enabled, access the Studio at `http://supabase.local`
+   - Otherwise, use port-forwarding:
+     ```bash
+     kubectl port-forward svc/supabase-studio 3000:3000
+     ```
 
-## Accessing the Services
+2. Get database credentials:
+   ```bash
+   kubectl get secret supabase-db-credentials -o jsonpath='{.data.DATABASE_URL}' | base64 -d
+   ```
 
-By default, the services are exposed as ClusterIP. To access them:
+3. Access REST API:
+   ```bash
+   kubectl port-forward svc/supabase-rest 3000:3000
+   ```
 
-1. **Supabase Studio**: Port 3000
-2. **Supabase API**: Port 54321
+## Uninstallation
 
-You can configure ingress by enabling it in the values.yaml file.
+To uninstall/delete the Supabase deployment:
 
-## Security Notes
+```bash
+helm delete supabase
+```
 
-- Change the default PostgreSQL password in production
-- Configure proper authentication keys for Supabase Studio
-- Consider enabling TLS for ingress in production
+## Contributing
 
-## Development
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-This is a minimal implementation focused on local development. For production use, consider:
+## License
 
-1. Adding proper authentication
-2. Configuring persistent storage
-3. Setting up proper ingress rules
-4. Implementing backup solutions
-5. Adding monitoring and logging 
+This project is licensed under the MIT License - see the LICENSE file for details. 

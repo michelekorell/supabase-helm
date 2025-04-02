@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.fullname" . }}-rest
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "supabase.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: rest
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: rest
+    spec:
+      containers:
+        - name: rest
+          image: "{{ .Values.rest.image.repository }}:{{ .Values.rest.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: PGRST_DB_URI
+              value: "postgres://authenticator:{{ .Values.secret.db.password }}@{{ include "supabase.fullname" . }}-db:5432/{{ .Values.secret.db.database }}"
+            - name: PGRST_DB_SCHEMA
+              value: "public"
+            - name: PGRST_DB_ANON_ROLE
+              value: "anon"
+            - name: PGRST_JWT_SECRET
+              value: {{ .Values.secret.jwt.secret }}
+          resources:
+            {{- toYaml .Values.rest.resources | nindent 12 }} 

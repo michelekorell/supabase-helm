@@ -7,70 +7,99 @@ global:
   version: "1.25.02"  # Supabase version
   postgresql:
     auth:
-      postgresPassword: "postgres"  # Change this in production!
-      database: "postgres"
+      database: postgres
+      username: postgres
+      password: postgres
+      secretName: supabase-db-credentials
+
+# Secret configuration
+secret:
+  jwt:
+    anonKey: "your-anon-key"  # Change in production!
+    serviceKey: "your-service-role-key"  # Change in production!
+    secret: "your-super-secret-jwt-token-with-at-least-32-characters-long"  # Change in production!
+  db:
+    username: "postgres"
+    password: "postgres"  # Change in production!
+    database: "postgres"
 
 # PostgreSQL settings
-postgresql:
+db:
   enabled: true
-  primary:
-    persistence:
-      size: 10Gi
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
+  image:
+    repository: supabase/postgres
+    tag: "15.1.0.117"
+  persistence:
+    size: 10Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  service:
+    type: ClusterIP
+    port: 5432
 
 # Supabase Auth settings
 auth:
   image:
     repository: supabase/gotrue
-    tag: "v2.170.0"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
+    tag: "v2.132.3"
   service:
     type: ClusterIP
     port: 9999
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 # Supabase REST API settings
 rest:
   image:
     repository: postgrest/postgrest
-    tag: "v12.2.8"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
+    tag: "v11.2.0"
   service:
     type: ClusterIP
     port: 3000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 # Supabase Studio settings
 studio:
   image:
     repository: supabase/studio
-    tag: "20250317-6955350"
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
+    tag: "20240205-0b7a0c1"
   service:
     type: ClusterIP
     port: 3000
+  ingress:
+    enabled: true
+    className: ""
+    annotations: {}
+    hosts:
+      - host: supabase.local
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 # Supabase Kong Gateway settings
 kong:
@@ -120,24 +149,37 @@ functions:
     type: ClusterIP
     port: 54321
 
+# Supabase Realtime settings
+realtime:
+  image:
+    repository: supabase/realtime
+    tag: "v2.25.50"
+  service:
+    type: ClusterIP
+    port: 4000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
 # Ingress configuration
 ingress:
-  enabled: true  # Set to true to enable ingress
-  className: nginx  # Your ingress class name
+  enabled: true
+  className: nginx
   annotations:
     cert-manager.io/cluster-issuer: your-actual-issuer-name
     kubernetes.io/ingress.class: nginx
-    # For SSL/TLS
-    # kubernetes.io/tls-acme: "true"
-    # For specific ingress controller settings
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
-    - host: your-actual-domain.com  # Replace with your actual domain
+    - host: your-actual-domain.com
       paths:
         - path: /
           pathType: Prefix
-  tls:  # Enable TLS by adding your secret
+  tls:
     - secretName: your-actual-tls-secret-name
       hosts:
         - your-actual-domain.com 

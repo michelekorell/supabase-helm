@@ -1,18 +1,22 @@
 apiVersion: v2
 name: supabase
-description: A lightweight Helm chart for deploying Supabase on Kubernetes
+description: A Helm chart for deploying Supabase on Kubernetes
 type: application
-version: 0.1.6  # Incrementing minor version for major configuration updates
-appVersion: "1.25.02"  # Supabase version
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: "Your Name"
+    email: "your.email@example.com"
 keywords:
   - supabase
   - postgresql
   - database
-  - api
   - auth
-maintainers:
-  - name: "Your Name"
-    email: "your.email@example.com"
-home: "https://github.com/michelekorell/supabase-helm"
+home: "https://supabase.com"
 sources:
-  - "https://github.com/michelekorell/supabase-helm" 
+  - "https://github.com/supabase/supabase"
+dependencies:
+  - name: postgresql
+    version: "12.1.2"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled 
