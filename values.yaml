@@ -28,7 +28,7 @@ postgresql:
 api:
   image:
     repository: supabase/postgres
-    tag: {{ .Values.global.version }}
+    tag: "1.25.02"
   resources:
     requests:
       memory: "256Mi"
@@ -44,7 +44,7 @@ api:
 studio:
   image:
     repository: supabase/studio
-    tag: {{ .Values.global.version }}
+    tag: "1.25.02"
   resources:
     requests:
       memory: "256Mi"
