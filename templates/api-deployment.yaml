@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.fullname" . }}-api
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "supabase.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: api
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 54321
+              protocol: TCP
+          env:
+            - name: POSTGRES_HOST
+              value: {{ include "supabase.fullname" . }}-postgresql
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.global.postgresql.auth.postgresPassword }}
+            - name: POSTGRES_DB
+              value: {{ .Values.global.postgresql.auth.database }}
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }} 

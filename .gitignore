@@ -1,0 +1,14 @@
+# Helm chart specific
+*.tgz
+charts/
+.helm/
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific
+.DS_Store
+Thumbs.db 

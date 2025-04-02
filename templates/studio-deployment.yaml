@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "supabase.fullname" . }}-studio
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+    app.kubernetes.io/component: studio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "supabase.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: studio
+  template:
+    metadata:
+      labels:
+        {{- include "supabase.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: studio
+    spec:
+      containers:
+        - name: studio
+          image: "{{ .Values.studio.image.repository }}:{{ .Values.studio.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: SUPABASE_URL
+              value: "http://{{ include "supabase.fullname" . }}-api:54321"
+            - name: SUPABASE_ANON_KEY
+              value: "your-anon-key"  # This should be properly configured in production
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              value: "your-service-role-key"  # This should be properly configured in production
+          resources:
+            {{- toYaml .Values.studio.resources | nindent 12 }} 
